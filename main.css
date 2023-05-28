@@ -1,8 +1,8 @@
 body {
     margin: 0;
     padding: 0;
-    width: 100vw;
-    height: 100vh;
+    width:  max(800px, 100vw);
+    height: calc(max(800px, 100vh));
     display: flex;
     align-items: center;
     justify-content: center;
@@ -12,3 +12,68 @@ body {
 canvas {
     background-color: #a2b14c;
 }
+
+.bar {
+    height: 5px;
+    width: 638px;
+}
+
+.progress {
+    height: 5px;
+    width: 0%;
+    background-color: white;
+}
+
+#bar-right {
+    width: 5px;
+    height: 628px;
+}
+
+#bar-left {
+    width: 5px;
+    height: 628px;
+}
+
+#progress-right {
+    width: 5px;
+    height: 0%;
+}
+
+#progress-left {
+    width: 5px;
+    height: 0%;
+    position: relative;
+}
+
+#progress-bottom{
+    position: relative;
+}
+
+#container-vert {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#container-hor {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+#title {
+    font-family: 'Roboto', sans-serif;
+    font-size: 50px;
+    color: white;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    bottom: 0;
+}
+
+h1 {
+    margin: 0;
+    padding: 0;
+} 

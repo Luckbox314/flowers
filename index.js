@@ -5,7 +5,7 @@ const FLOWER_SIZE = 32;
 const FLOWER_COUNT = 12;
 const API_URL = 'https://sood1cr8tc.execute-api.us-east-2.amazonaws.com/default/';
 var flowers = [];
-const  FLOWER_BLOCK_TIME = 1000 * 60 * 5;  // 5 minutes
+const  FLOWER_BLOCK_TIME = 1000 * 60 * 1;  // 1 minute
 
 class Flower {
     constructor(x, y, style, orientation = 1) {
@@ -24,10 +24,11 @@ function getFlowersFromDB() {
     http.send();
     http.onreadystatechange = (e) => {
         console.log(http.responseText);
-        
         const flowers_json = JSON.parse(http.responseText);
         flowers = flowers_json.map(f => new Flower(f.x, f.y, f.style, 1));
         drawFlowers();
+        unblockCanvas()
+
     }
 
     // make a get from db
@@ -92,33 +93,68 @@ function mouseEventListener(e) {
     const pos = getCursorPosition(canvas, e);
     addFlower(pos.x, pos.y, flowers);
     drawFlowers();
-    blockFlowers();
+    blockFlowers(FLOWER_BLOCK_TIME);
 }
 
-function blockFlowers() {
+function blockFlowers(time) {
     // block flowers for 5 minutes
-    canvas.removeEventListener('mousedown', mouseEventListener)
+    canvas.removeEventListener('mousedown', mouseEventListener);
     setTimeout(() => {
-        canvas.addEventListener('mousedown', mouseEventListener)
-    }, FLOWER_BLOCK_TIME);
+        canvas.addEventListener('mousedown', mouseEventListener);
+    }, time);
 
     // grey out mouse pointer
     canvas.style.cursor = 'not-allowed';
     setTimeout(() => {
         canvas.style.cursor = 'crosshair';
     }
-    , FLOWER_BLOCK_TIME);
-
-    // draw a white outline outside the canvas that will get smaller and smaller showing the time left
-
-    canvas.style.border = '5px solid white';
-    setTimeout(() => {
-        canvas.style.border = 'none';
-    }
-    , FLOWER_BLOCK_TIME);
+    , time);
+    progresBars(time);
 }
 
+function blockCanvas(){
+    canvas.removeEventListener('mousedown', mouseEventListener);
+    canvas.style.cursor = 'wait';
+}
 
+function unblockCanvas(){
+    canvas.addEventListener('mousedown', mouseEventListener);
+    canvas.style.cursor = 'crosshair';
+}
+
+function progresBars(time) {
+    const progess_top = document.getElementById('progress-top');
+    const progess_right = document.getElementById('progress-right');
+    const progess_bottom = document.getElementById('progress-bottom');
+    const progess_left = document.getElementById('progress-left');
+
+    progess_top.style.width = '100%';
+    progess_right.style.height = '100%';
+    progess_bottom.style.width = '100%';
+    progess_left.style.height = '100%';
+
+    time = time / 10;
+    var progress = 0;
+
+    var id = setInterval(frame, 10);
+
+    function frame() { 
+        if (progress >= time) {
+            clearInterval(id);
+        } else {
+            progress++;
+        }
+
+        progess_top.style.width    = `${Math.max(0,Math.min(100, ( 4*time/4 - progress ) / (time/4)  * 100))}%`; 
+        progess_right.style.height = `${Math.max(0,Math.min(100, ( 3*time/4 - progress ) / (time/4)  * 100))}%`;
+
+        progess_bottom.style.width = `${Math.max(0,Math.min(100, ( 2*time/4 - progress ) / (time/4)  * 100))}%`;
+        progess_left.style.height  = `${Math.max(0,Math.min(100, ( 1*time/4 - progress ) / (time/4)  * 100))}%`;
+
+        progess_bottom.style.left  = `${Math.min(100,Math.max(0, ( progress  - 1*time/4 ) / (time/4)  * 100))}%`;
+        progess_left.style.top     = `${Math.min(100,Math.max(0, ( progress  - 0*time/4 ) / (time/4)  * 100))}%`;
+    }   
+}
 
 
 
@@ -127,6 +163,7 @@ function blockFlowers() {
 
 
 // calculate pos of flowers
+blockCanvas()
 getFlowersFromDB();
 
 
@@ -142,5 +179,12 @@ for (let i = 0; i < FLOWER_COUNT; i++) {
     }
 }
 
-
-canvas.addEventListener('mousedown', mouseEventListener)
+// addEventListener("keydown", (event) => {
+//     console.log(event);
+//     console.log(event.key);
+//     if (event.isComposing || event.key === 'l') {
+//         progresBars(FLOWER_BLOCK_TIME);
+//         return;
+//     }
+//     // do something
+//   });

@@ -28,8 +28,6 @@ function getFlowersFromDB() {
         flowers = flowers_json.map(f => new Flower(f.x, f.y, f.style, 1));
         drawFlowers();
         unblockCanvas();
-        const message = document.getElementById('message');
-        message.innerText = 'Click the garden!';
 
     }
 
@@ -124,11 +122,15 @@ function blockFlowers(time) {
 function blockCanvas(){
     canvas.removeEventListener('mousedown', mouseEventListener);
     canvas.style.cursor = 'wait';
+    const message = document.getElementById('message');
+    message.innerText = 'Wait...';
 }
 
 function unblockCanvas(){
     canvas.addEventListener('mousedown', mouseEventListener);
     canvas.style.cursor = 'crosshair';
+    const message = document.getElementById('message');
+    message.innerText = 'Click the garden!';
 }
 
 function progresBars(time) {
@@ -173,8 +175,6 @@ function progresBars(time) {
 
 // calculate pos of flowers
 blockCanvas()
-const message = document.getElementById('message');
-message.innerText = 'Wait...';
 getFlowersFromDB();
 
 

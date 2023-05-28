@@ -1,36 +1,44 @@
-
-console.log("Drawing flowers")
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext("2d");
 var flowers_img = []
 const FLOWER_SIZE = 32;
 const FLOWER_COUNT = 12;
+const API_URL = 'https://sood1cr8tc.execute-api.us-east-2.amazonaws.com/default/';
+var flowers = [];
 
 class Flower {
-    constructor(x, y, type, orientation = 1) {
+    constructor(x, y, style, orientation = 1) {
         this.x = x;
         this.y = y;
-        this.type = type;
+        this.style = style;
         this.orientation = orientation;
     }
 }
 
 function getFlowersFromDB() {
+    const http = new XMLHttpRequest();
+    const url = API_URL + 'flowers-get';
+    http.open("POST", url);
+
+    http.send();
+    http.onreadystatechange = (e) => {
+        console.log(http.responseText);
+        
+    }
+
     // make a get from db
     var testFlower = new Flower(40, 40, 2, 1);
     return [testFlower];
 }
 
 function drawFlower(flower) {   
-    console.log(ctx);
-    console.log(flowers_img[flower.type]);
-    ctx.drawImage(flowers_img[flower.type], flower.x - FLOWER_SIZE / 2, flower.y - FLOWER_SIZE,  FLOWER_SIZE , FLOWER_SIZE);
+    ctx.drawImage(flowers_img[flower.style], flower.x - FLOWER_SIZE / 2, flower.y - FLOWER_SIZE,  FLOWER_SIZE , FLOWER_SIZE);
 }
 
 function addFlower(x, y, flowers) {
-    var type = Math.floor(Math.random() * 11 + 1);
+    var style = Math.floor(Math.random() * 11 + 1);
     var orientation = Math.floor(Math.random() * 2 - 1);
-    var flower = new Flower(x, y, type, orientation);
+    var flower = new Flower(x, y, style, orientation);
     saveFlowerInDB(flower);
 
     // momentary thing
@@ -40,6 +48,13 @@ function addFlower(x, y, flowers) {
 }
 
 function saveFlowerInDB(flower) {
+    const http = new XMLHttpRequest();
+    const url = API_URL + 'flowers-post';
+    http.open("POST", url);
+    http.send(JSON.stringify(flower));
+    http.onreadystatechange = (e) => {
+        console.log(http.responseText);
+    }
     // save into db
 
     // update local flowers 
@@ -48,15 +63,15 @@ function saveFlowerInDB(flower) {
 
 function drawFlowers(){
     // draw flowers
+    flowers.sort((a, b) => a.y - b.y);
     for (let i = 0; i < flowers.length; i++) {
-        console.log(flowers_img);
         drawFlower(flowers[i]);
         
     }
 
 }
 // calculate pos of flowers
-var flowers = getFlowersFromDB();
+getFlowersFromDB();
 
 
 
@@ -74,10 +89,9 @@ for (let i = 0; i < FLOWER_COUNT; i++) {
 
 // from https://stackoverflow.com/questions/55677/how-do-i-get-the-coordinates-of-a-mouse-click-on-a-canvas-element
 function getCursorPosition(canvas, event) {
-    const rect = canvas.getBoundingClientRect()
-    const x = event.clientX - rect.left
-    const y = event.clientY - rect.top
-    console.log("x: " + x + " y: " + y)
+    const rect = canvas.getBoundingClientRect();
+    const x = Math.floor(event.clientX - rect.left);
+    const y = Math.floor(event.clientY - rect.top);
     return {x: x, y: y};
     
 }

@@ -5,6 +5,7 @@ const FLOWER_SIZE = 32;
 const FLOWER_COUNT = 12;
 const API_URL = 'https://sood1cr8tc.execute-api.us-east-2.amazonaws.com/default/';
 var flowers = [];
+const  FLOWER_BLOCK_TIME = 1000 * 60 * 5;  // 5 minutes
 
 class Flower {
     constructor(x, y, style, orientation = 1) {
@@ -76,6 +77,55 @@ function drawFlowers(){
     }
 
 }
+
+
+// from https://stackoverflow.com/questions/55677/how-do-i-get-the-coordinates-of-a-mouse-click-on-a-canvas-element
+function getCursorPosition(canvas, event) {
+    const rect = canvas.getBoundingClientRect();
+    const x = Math.floor(event.clientX - rect.left);
+    const y = Math.floor(event.clientY - rect.top);
+    return {x: x, y: y};
+    
+}
+
+function mouseEventListener(e) {
+    const pos = getCursorPosition(canvas, e);
+    addFlower(pos.x, pos.y, flowers);
+    drawFlowers();
+    blockFlowers();
+}
+
+function blockFlowers() {
+    // block flowers for 5 minutes
+    canvas.removeEventListener('mousedown', mouseEventListener)
+    setTimeout(() => {
+        canvas.addEventListener('mousedown', mouseEventListener)
+    }, FLOWER_BLOCK_TIME);
+
+    // grey out mouse pointer
+    canvas.style.cursor = 'not-allowed';
+    setTimeout(() => {
+        canvas.style.cursor = 'crosshair';
+    }
+    , FLOWER_BLOCK_TIME);
+
+    // draw a white outline outside the canvas that will get smaller and smaller showing the time left
+
+    canvas.style.border = '5px solid white';
+    setTimeout(() => {
+        canvas.style.border = 'none';
+    }
+    , FLOWER_BLOCK_TIME);
+}
+
+
+
+
+
+
+
+
+
 // calculate pos of flowers
 getFlowersFromDB();
 
@@ -93,16 +143,4 @@ for (let i = 0; i < FLOWER_COUNT; i++) {
 }
 
 
-// from https://stackoverflow.com/questions/55677/how-do-i-get-the-coordinates-of-a-mouse-click-on-a-canvas-element
-function getCursorPosition(canvas, event) {
-    const rect = canvas.getBoundingClientRect();
-    const x = Math.floor(event.clientX - rect.left);
-    const y = Math.floor(event.clientY - rect.top);
-    return {x: x, y: y};
-    
-}
-canvas.addEventListener('mousedown', function(e) {
-    const pos = getCursorPosition(canvas, e);
-    addFlower(pos.x, pos.y, flowers);
-    drawFlowers();
-})
+canvas.addEventListener('mousedown', mouseEventListener)

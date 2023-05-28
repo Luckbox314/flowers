@@ -18,12 +18,15 @@ class Flower {
 function getFlowersFromDB() {
     const http = new XMLHttpRequest();
     const url = API_URL + 'flowers-get';
-    http.open("POST", url);
+    http.open("GET", url);
 
     http.send();
     http.onreadystatechange = (e) => {
         console.log(http.responseText);
         
+        const flowers_json = JSON.parse(http.responseText);
+        flowers = flowers_json.map(f => new Flower(f.x, f.y, f.style, 1));
+        drawFlowers();
     }
 
     // make a get from db
@@ -54,6 +57,9 @@ function saveFlowerInDB(flower) {
     http.send(JSON.stringify(flower));
     http.onreadystatechange = (e) => {
         console.log(http.responseText);
+        const flowers_json = JSON.parse(http.responseText);
+        flowers = flowers_json.map(f => new Flower(f.x, f.y, f.style, 1));
+        drawFlowers();
     }
     // save into db
 

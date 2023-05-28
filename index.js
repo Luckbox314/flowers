@@ -99,24 +99,19 @@ function mouseEventListener(e) {
 function blockFlowers(time) {
     // block flowers for 5 minutes
     canvas.removeEventListener('mousedown', mouseEventListener);
-    setTimeout(() => {
-        canvas.addEventListener('mousedown', mouseEventListener);
-    }, time);
-
-    // grey out mouse pointer
     canvas.style.cursor = 'not-allowed';
-    setTimeout(() => {
-        canvas.style.cursor = 'crosshair';
-    }
-    , time);
-    progresBars(time);
-
     const message = document.getElementById('message');
     message.innerText = 'Wait...';
+    const id = progresBars(time);
     setTimeout(() => {
+        canvas.addEventListener('mousedown', mouseEventListener);
+        canvas.style.cursor = 'crosshair';
         message.innerText = 'Click the garden!';
-    }
-    , time);
+        clearInterval(id);
+    }, time);
+    
+
+
 }
 
 function blockCanvas(){
@@ -165,6 +160,8 @@ function progresBars(time) {
         progess_bottom.style.left  = `${Math.min(100,Math.max(0, ( progress  - 1*time/4 ) / (time/4)  * 100))}%`;
         progess_left.style.top     = `${Math.min(100,Math.max(0, ( progress  - 0*time/4 ) / (time/4)  * 100))}%`;
     }   
+
+    return id;
 }
 
 

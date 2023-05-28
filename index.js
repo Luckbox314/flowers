@@ -107,6 +107,12 @@ function blockFlowers(time) {
         canvas.addEventListener('mousedown', mouseEventListener);
         canvas.style.cursor = 'crosshair';
         message.innerText = 'Click the garden!';
+
+        progess_top.style.width = '0%';
+        progess_right.style.height = '0%';
+        progess_bottom.style.width = '0%';
+        progess_left.style.height = '0%';
+        
         clearInterval(id);
     }, time);
     
@@ -134,7 +140,7 @@ function progresBars(time) {
     const progess_bottom = document.getElementById('progress-bottom');
     const progess_left = document.getElementById('progress-left');
 
-    progess_top.style.width = '100%';
+    progess_top.style.width = '0%';
     progess_right.style.height = '100%';
     progess_bottom.style.width = '100%';
     progess_left.style.height = '100%';
